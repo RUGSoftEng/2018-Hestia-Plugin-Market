@@ -100,18 +100,16 @@ class Plugin(Entity, BASE):
     )
 
     def __init__(
-        self, 
-        plugin_id, 
+        self,
         plugin_name, 
         plugin_author_id, 
-        plugin_description, 
-        plugin_votes):
+        plugin_description):
         Entity.__init__(self)
         self.plugin_id = url_safe_uuid()
         self.plugin_name = plugin_name
         self.plugin_author_id = plugin_author_id
         self.plugin_description = plugin_description
-        self.plugin_votes = plugin_votes
+        self.plugin_votes = 0
 
 
 class PluginSchema(Schema):

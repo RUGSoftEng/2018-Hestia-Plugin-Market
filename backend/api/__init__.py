@@ -5,6 +5,7 @@ from flask_restplus import Api
 from api.endpoints.servers.servers import NAMESPACE as SERVERS_NAMESPACE
 from api.endpoints.users.users import NAMESPACE as USERS_NAMESPACE
 from api.endpoints.marketplace import NAMESPACE as MARKETPLACE_NAMESPACE
+from api.endpoints.marketplace.plugins.plugins import NAMESPACE as PLUGINS_NAMESPACE
 
 AUTHORIZATIONS = {
     'apikey': {
@@ -26,3 +27,4 @@ API = Api(
 API.add_namespace(SERVERS_NAMESPACE)
 API.add_namespace(USERS_NAMESPACE)
 API.add_namespace(MARKETPLACE_NAMESPACE)
+API.add_namespace(PLUGINS_NAMESPACE)

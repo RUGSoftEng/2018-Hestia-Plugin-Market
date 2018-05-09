@@ -17,8 +17,8 @@ from api.database.entities.model import (
 	Plugin,
 	PluginSchema
 )
-from api.endpoints.marketplace import (NAMESPACE)
-from api.endpoints.marketplace.plugin import (PLUGIN)
+from api.endpoints.marketplace.plugins import (NAMESPACE)
+from api.endpoints.servers.server import (SERVER)
 
 BASE.metadata.create_all(ENGINE)
 
@@ -31,9 +31,33 @@ class PluginList(Resource):
 		'''Gets the list of plugins.'''
 		session = SESSION()
 		plugins_objects = session.query(
-			Server)
+			Plugin)
 		schema = PluginSchema(many=True)
 		all_plugins = schema.dump(plugins_objects)
 
 		session.close()
 		return jsonify(all_plugins.data)
+
+	@NAMESPACE.doc('create_plugin')
+	@cross_origin(headers=["Content-Type", "Authorization"])
+    @cross_origin(headers=["Access-Control-Allow-Origin", "*"])
+    @requires_auth
+    @NAMESPACE.doc(security='apikey')
+	def post(self):
+		'''Posts a new plugin.'''
+		payload = NAMESPACE.apis[0].payload
+		payload['user_id'] = get_user_id()
+		posted_plugin = PluginSchema(
+			only=('plugin_name',
+				  'plugin_author_id',
+				  'plugin_description')).load(payload)
+
+		plugin = Plugin(**posted_plugin.data)
+
+		session = SESSION()
+		session.add(server)
+		session.commit()
+
+		new_plugin = PluginSchema().dump(plugin)
+		session.close()
+		return jsonify(new_plugin)
