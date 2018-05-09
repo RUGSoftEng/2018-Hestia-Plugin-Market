@@ -64,3 +64,22 @@ class ServerSchema(Schema):
     server_port = fields.Str()
     created_at = fields.DateTime()
     updated_at = fields.DateTime()
+
+
+class Plugin(Entity, BASE):
+    """
+    The plugin entity.
+    """
+    __tablename__ = 'plugins'
+
+    plugin_id = Column(String, primary_key=True)
+    plugin_name = Column(String, unique=True)
+    plugin_author_id = Column(String, ForeignKey('users.user_id'))
+    plugin_description = Column(String)
+    servers = relationship("Server", secondary=)
+
+class PluginSchema(Schema):
+    """
+    The plugin schema.
+    """
+    
