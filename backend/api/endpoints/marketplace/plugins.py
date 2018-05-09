@@ -14,7 +14,8 @@ from api.database.entities.entity import (
 	BASE,
 )
 from api.database.entities.model import (
-
+	Plugin,
+	PluginSchema
 )
 from api.endpoints.marketplace import (NAMESPACE)
 from api.endpoints.marketplace.plugin import (PLUGIN)
@@ -25,11 +26,14 @@ BASE.metadata.create_all(ENGINE)
 class PluginList(Resource):
 	'''Shows a list of all plugins, and lets you POST to add new plugins.'''
 	@NAMESPACE.doc('list_plugins')
-	@cross_origin(headers=["Content-Type", "Authorization"])
 	@cross_origin(headers=["Access-Control-Allow-Origin", "*"])
-	@requires_auth
-	@NAMESPACE.doc(security='apikey')
 	def get(self):
 		'''Gets the list of plugins.'''
 		session = SESSION()
-		
+		plugins_objects = session.query(
+			Server)
+		schema = PluginSchema(many=True)
+		all_plugins = schema.dump(plugins_objects)
+
+		session.close()
+		return jsonify(all_plugins.data)

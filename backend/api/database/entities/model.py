@@ -32,6 +32,15 @@ class UserSchema(Schema):
     updated_at = fields.DateTime()
 
 
+"""
+Table used to define many-to-many relationship between servers and plugins.
+"""
+plugin_server_association_table = Table('association', Base.metadata,
+    Column('plugin_id', String, ForeignKey('plugins.plugin_id')),
+    Column('server_id', String, ForeignKey('servers.server_id'))
+)
+
+
 class Server(Entity, BASE):
     """
     The server entity.
@@ -43,6 +52,12 @@ class Server(Entity, BASE):
     server_name = Column(String)
     server_address = Column(String)
     server_port = Column(String)
+
+    plugins = relationship(
+        "Plugin",
+        secondary=plugin_server_association_table,
+        back_populates="servers"
+    )
 
     def __init__(self, user_id, server_name, server_address, server_port):
         Entity.__init__(self)
@@ -76,10 +91,38 @@ class Plugin(Entity, BASE):
     plugin_name = Column(String, unique=True)
     plugin_author_id = Column(String, ForeignKey('users.user_id'))
     plugin_description = Column(String)
-    servers = relationship("Server", secondary=)
+    plugin_votes = Column(Integer)
+
+    servers = relationship(
+        "Server", 
+        secondary=plugin_server_association_table,
+        back_populates="plugins"
+    )
+
+    def __init__(
+        self, 
+        plugin_id, 
+        plugin_name, 
+        plugin_author_id, 
+        plugin_description, 
+        plugin_votes):
+        Entity.__init__(self)
+        self.plugin_id = url_safe_uuid()
+        self.plugin_name = plugin_name
+        self.plugin_author_id = plugin_author_id
+        self.plugin_description = plugin_description
+        self.plugin_votes = plugin_votes
+        
 
 class PluginSchema(Schema):
     """
     The plugin schema.
     """
-    
+    plugin_id = fields.Str()
+    plugin_name = fields.Str()
+    plugin_author_id = fields.Str()
+    plugin_description = fields.Str()
+    plugin_votes = fields.Int()
+
+    created_at = fields.DateTime()
+    updated_at = fields.DateTime()
