@@ -2,7 +2,7 @@
 Declare the model objects for the database as well as schema for each
 """
 from marshmallow import Schema, fields
-from sqlalchemy import Column, String, ForeignKey
+from sqlalchemy import Column, String, Integer, ForeignKey, Table
 from sqlalchemy.orm import relationship
 
 from api.database.entities.entity import Entity, BASE
@@ -35,7 +35,7 @@ class UserSchema(Schema):
 """
 Table used to define many-to-many relationship between servers and plugins.
 """
-plugin_server_association_table = Table('association', Base.metadata,
+plugin_server_association_table = Table('association', BASE.metadata,
     Column('plugin_id', String, ForeignKey('plugins.plugin_id')),
     Column('server_id', String, ForeignKey('servers.server_id'))
 )
@@ -112,7 +112,7 @@ class Plugin(Entity, BASE):
         self.plugin_author_id = plugin_author_id
         self.plugin_description = plugin_description
         self.plugin_votes = plugin_votes
-        
+
 
 class PluginSchema(Schema):
     """
