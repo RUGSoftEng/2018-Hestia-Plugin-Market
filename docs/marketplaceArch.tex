@@ -1,0 +1,57 @@
+\documentclass[a4paper, 12pt]{article}
+
+\usepackage{xspace}
+\usepackage{graphicx}
+
+\begin{document}
+
+\title{Hestia Marketplace Architecture and Design}
+\author{Andrew Lalis}
+\date{Last Updated: \today}
+\maketitle
+
+\tableofcontents
+\newpage
+
+\section{Introduction and Background}
+	The Hestia Web App is a method by which users can interact with their local Hestia \emph{controllers}, to manipulate certain \emph{devices} in their home. In order for the controller to be able to send the proper commands to such devices, it is imperative that the user install the device's required \emph{plugin}.
+
+	A plugin is a collection of python scripts and configuration files that enables the controller to interact with any IP-enabled device on its local network. To make it easier for users to ensure their devices work without hassle, the \emph{Plugin Marketplace} will provide access to a database of plugins. The marketplace will provide a REST API to let the Web App query plugins and to let plugin developers upload their work.
+
+	From the developer's perspective, a plugin is much more than simply a file folder, and as such, information such as the date of creation, author, and a description need to also be stored so that users can easily understand the contents and purpose of a plugin without needing to dissect any source code.
+
+\section{Architecture and Database Design}
+	The main focus of this section will be on the tables needed to store all the information relevant to a plugin. This will consist of a list of attributes that describe a plugin, and any needed auxiliary tables for storing other information in a way that wastes as little space as possible.
+
+	As mentioned before, the most important table in the database is the \emph{Plugins} table, whose attributes are defined in detail in the following list.
+
+	\begin{itemize}
+		\item \emph{id} - A globally unique identification string which can be used to reference this plugin.
+		\item \emph{name} - The name of the plugin, as it will appear in lists when users wish to browse the list of plugins.
+		\item \emph{author\_id} - The unique authenticated id of the user who uploaded the plugin.
+		\item \emph{created\_date} - The date on which the plugin was first uploaded.
+		\item \emph{last\_edited\_date} - The date of the most recent update to the plugin.
+		\item \emph{version} - A string of numbers representing the current version of the plugin. This is up to the author's discretion.
+		\item \emph{description\_short} - A short and concise description, less than 100 characters, which can be displayed in menus to give users a hint as to what the plugin does.
+		\item \emph{description\_long} - A much more detailed description of the plugin, which provides detailed instructions for use of the plugin, or other relevant details that the author thinks the users should know.
+		\item \emph{up\_goats} - Up-Goats represent the number of users who cast a positive vote for the plugin, meaning that they believe it is valuable and useful.
+		\item \emph{down\_goats} - Down-Goats are the opposite of Up-Goats, and count the number of users who voted negatively for the plugin.
+	\end{itemize}
+
+	Additionally, some other tables are needed to provide auxiliary information to make the user experience more enjoyable. These are defined below.
+
+	The \emph{Tags} table holds many tags, which are can be applied to many plugins to group them into related categories.
+
+	\begin{itemize}
+		\item \emph{name} - A unique string which represents a tag, which can be applied to a plugin to give it some extra meaning.
+		\item \emph{description} - A short description of the tag, or an embellishment of its meaning.
+	\end{itemize}
+
+	In order to manifest the \emph{many-to-many} relationship between tags and plugins, a third table, \emph{PluginTags}, is needed to pair the two together.
+
+	\begin{itemize}
+		\item \emph{plugin\_id} - The global id of the plugin paired with a tag.
+		\item \emph{tag\_name} - The unique name of a tag which is paired to the above plugin.
+	\end{itemize}
+
+\end{document}

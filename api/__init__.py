@@ -17,14 +17,11 @@ AUTHORIZATIONS = {
 
 API = Api(
     version='1.0',
-    title='Hestia Web API',
-    description='The Hestia Web Api, handling routing to your controllers.',
+    title='Hestia Plugin Marketplace API',
+    description='The Hestia Plugin Marketplace API, providing plugins and their files.',
     authorizations=AUTHORIZATIONS
 )
 
 
 # Adds the SERVER and USER namespace to the API
-API.add_namespace(SERVERS_NAMESPACE)
-API.add_namespace(USERS_NAMESPACE)
-API.add_namespace(MARKETPLACE_NAMESPACE)
 API.add_namespace(PLUGINS_NAMESPACE)
