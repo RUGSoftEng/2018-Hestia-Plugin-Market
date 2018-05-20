@@ -5,3 +5,6 @@ site/__pycache__/
 *.aux
 *.log
 *.toc
+
+#pycharm files
+.idea/*
