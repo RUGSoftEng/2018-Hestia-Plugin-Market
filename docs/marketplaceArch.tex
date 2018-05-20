@@ -105,6 +105,12 @@
 			\item \emph{vote} - Either 1 or -1, depending on if the vote is an \emph{up\_goat} or \emph{down\_goat}.
 		\end{itemize}
 
+		\begin{figure}
+			\caption{The tables can be visualized as the schema shown here.}
+			\centering
+			\includegraphics[width=0.8\textwidth]{img/database_schema.png}
+		\end{figure}
+
 	\section{File Storage}
 		Because the core of each plugin is a collection of files, these will need to be stored in or alongside the database. In order to keep the files synchronized with the contents of the actual relational database, a \textbf{plugins} folder will contain many \verb|.zip| files, each named according the the globally unique id number of the plugin they represent.
 
