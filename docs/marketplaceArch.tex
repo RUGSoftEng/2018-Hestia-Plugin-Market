@@ -34,6 +34,8 @@
       {]}{{{\color{delim}{]}}}}{1},
 }
 
+\setcounter{tocdepth}{1}
+
 \begin{document}
 
 \title{Hestia Marketplace Architecture and Design}
@@ -95,6 +97,14 @@
 			\item \emph{tag\_name} - The unique name of a tag which is paired to the above plugin.
 		\end{itemize}
 
+		Further, because each plugin records the number of votes for it, and each vote is tied to a specific authenticated user, a table is needed to record this information. The \textbf{UserVotes} table is described below.
+
+		\begin{itemize}
+			\item \emph{user\_id} - The unique id of a user.
+			\item \emph{plugin\_id} - The unique id of a plugin for which a user has voted.
+			\item \emph{vote} - Either 1 or -1, depending on if the vote is an \emph{up\_goat} or \emph{down\_goat}.
+		\end{itemize}
+
 	\section{File Storage}
 		Because the core of each plugin is a collection of files, these will need to be stored in or alongside the database. In order to keep the files synchronized with the contents of the actual relational database, a \textbf{plugins} folder will contain many \verb|.zip| files, each named according the the globally unique id number of the plugin they represent.
 
@@ -102,10 +112,18 @@
 	This section contains the API documentation for the HTTP methods used to interact with the server, and defines the syntax for making requests, as well as what responses should be expected when requests are made, valid or not.
 
 	\section{GET plugins}
-		Returns some basic information about all available plugins, while omitting more specific information like \emph{description\_long}.
+		Returns some basic information about all available plugins, while omitting more specific information like \emph{description\_long}. Some options can be specified to customize the response content, and it is highly encouraged to make use of these, so as to avoid stressing the server by requesting almost the entire contents of the database.
 
 		\subsection{Syntax}
 			\verb|GET <URL>/plugins|
+
+			To constrain the results, it is possible to specify some options via a JSON object, such as the example below.
+
+			\lstinputlisting[language=json]{code/get_plugins_options.json}
+
+			More specifically, a \textbf{count} can limit the query to some number of plugins. \textbf{tags} is used to filter the query to only contain plugins whose tags contain all those listed inside that list. \textbf{title\_contains} will filter plugins so that only those whose title contains the supplied text will be returned. \textbf{author\_id} can be used to only return plugins by a specified author.
+
+			It is also possible to request that the returned data be sorted, and this can be done with the \textbf{sort} key, where the \textbf{by} keyword specifies which data category to sort by. The categories are simply any attributes listed in the \textbf{Plugins} table above. Additionally, \textbf{order} can be specified to sort the data either ascendingly or descendingly. When this is omitted, data is sorted ascendingly by default.
 
 		\subsection{Responses}
 			\subsubsection{Success}
@@ -142,6 +160,130 @@
 
 		\subsection{Responses}
 			\subsubsection{Success}
-				If the plugin specified by the given id exists, then the server will return 
+				If the plugin specified by the given id exists, then the server will return a response consisting of a \verb|200 Ok|, along with header \verb|Content-Type: application/zip|, which specifies that the server has sent a \verb|.zip| file in the response.
+
+			\subsubsection{Plugin Not Found}
+				If the id specified in the URL does not refer to any existing plugin, then a \verb|404 Not Found| error message will be returned.
+
+			\subsubsection{Server Error}
+				In the event of a server error, despite a possibly valid request, \verb|500 Internal Error| will be returned.
+
+	\section{POST a new plugin}
+		To create a new plugin, one must send a POST request with the necessary data.
+
+		\subsection{Syntax}
+			\verb|POST <URL>/plugin|; \footnotesize{Where the header \verb|Content-Type| is set to \verb|application/json|, and the content of the POST contains data with the same structure as shown below.}
+
+			\lstinputlisting[language=json]{code/post_plugin_example.json}
+
+		\subsection{Responses}
+			\subsubsection{Success}
+				If the server is able to successfully create the plugin without any constraint conflicts or other issues, a \verb|201 Created| message will be returned, as well as the id of the newly created plugin in a json object as shown below. Once the plugin has been created, one must then use a PUT request to upload the zipped plugin files to the server, using the received id.
+
+				\lstinputlisting[language=json]{code/post_plugin_success_response.json}
+
+				Note that after some time, if a created plugin has not had some files added to it, that plugin will be removed automatically. Therefore, the files should be uploaded immediately after the success of this request is returned.
+
+			\subsubsection{Constraint Violation}
+				Due to the nature of entering data into a database, certain values must not be null, certain values must be unique, etc. If the content of the POST request does not satisfy the constraints set forth for the database, the server will return \verb|400 Bad Request|.
+
+			\subsubsection{Authorization Error}
+				If the sender of the request is not authorized via Auth0, then the server will return \verb|401 Unauthorized|, as it is necessary for a user to be logged in to create a plugin so it can be traced to that user.
+
+			\subsubsection{Server Error}
+				If for some reason the server encounters an error beyond what was defined above, it will return \verb|500 Internal Error|.
+
+	\section{PUT .zip file to a plugin}
+		Immediately after creating a plugin, one should use this request to upload a \verb|.zip| file to the server, with the same authenticated user as the author of the plugin. Nobody else will be allowed to upload to the plugin except for the author.
+
+		This method is also used to update the files of an existing plugin, which will overwrite any existing files.
+
+		\subsection{Syntax}
+			\verb|PUT <URL>/plugin/<PLUGIN_ID>/files|; \footnotesize{Where \verb|PLUGIN_ID| is the unique id of the plugin.}
+
+			The content of the request contains the \verb|.zip| file, which itself contains the contents of the plugin.
+
+		\subsection{Responses}
+			\subsubsection{Success}
+				If the server is able to successfully receive the zipped files and store it, the server will return \verb|200 Ok|.
+
+			\subsubsection{Authorization Error}
+				If the sender of the request is not authorized via Auth0, and the author of the plugin to which they are attempting to upload the files, a \verb|401 Unauthorized| error will be returned.
+
+			\subsubsection{No Files}
+				Because the whole point of this request is to upload a \verb|.zip| file, if none is provided, the server will return a \verb|400 Bad Request| error.
+
+			\subsubsection{Plugin Not Found}
+				If the id provided does not refer to any existing plugin, then \verb|404 Not Found| will be returned.
+
+			\subsubsection{Server Error}
+				Beyond all the possible user errors written above, if the server fails on its own accord, then it will return a \verb|500 Internal Error|, at which point the user can assume that their files have not been saved on the server.
+
+	\section{DELETE a plugin}
+		This will irreversibly delete both a plugin and any zipped files associated with it. This action must be performed by either an administrator or the plugin owner.
+
+		\subsection{Syntax}
+			\verb|DELETE <URL>/plugin/<PLUGIN_ID>|; \footnotesize{Where \verb|PLUGIN_ID| is the unique id of the plugin.}
+
+		\subsection{Responses}
+			\subsubsection{Success}
+				If the resource is deleted successfully, as well as the associated files, then the server will return \verb|205 Reset Content|, as it will be necessary for the user to refresh their content view now that the plugin has been deleted.
+
+			\subsubsection{Authorization Error}
+				If the user is not both authenticated, and the author of the plugin, then they are forbidden from deleting the plugin. The server will return \verb|401 Unauthorized|.
+
+			\subsubsection{Plugin Not Found}
+				If the id provided does not refer to any existing plugin, then \verb|404 Not Found| will be returned.
+
+			\subsubsection{Server Error}
+				If for some reason, the server is not able to delete both the plugin in the database and the associated files, then it will return \verb|500 Internal Error|.
+
+	\section{PATCH a plugin's metadata}
+		Using this method, it is possible to update parts of the plugin's metadata, if the user is authenticated as the author of the plugin.
+
+		\subsection{Syntax}
+			\verb|PATCH <URL>/plugin/<PLUGIN_ID>|; \footnotesize{Where \verb|PLUGIN_ID| is the unique id of the plugin.}
+
+			The new data can be sent in the same format as when POSTing a new plugin, although here it is permissable to omit fields which do not need to be updated. Therefore, the following example from the POST request is applicable here too.
+
+			\lstinputlisting[language=json]{code/post_plugin_example.json}
+
+		\subsection{Responses}
+			\subsubsection{Success}
+				If the server can successfully use the data which is sent to update the plugin's metadata, then the server will return a \verb|205 Reset Content| code, as the user's view should be updated to reflect the successful changes.
+
+			\subsubsection{Authorization Error}
+				If the user is not both authenticated, and the author of the plugin, then they are forbidden from updating the metadata of the plugin. The server will therefore return \verb|401 Unauthorized|.
+
+			\subsubsection{Plugin Not Found}
+				If the id provided does not refer to any existing plugin, then \verb|404 Not Found| will be returned.
+
+			\subsubsection{Server Error}
+				If for some reason, the server is not able to update the metadata and fails internally, it will return a \verb|500 Internal Error|.
+
+	\section{POST to vote for a plugin}
+		Use this method to allow a user to cast a vote for a particular plugin. The vote will be traced to their authenticated user id, so that the vote can be changed at any time simply by calling this method again.
+
+		\subsection{Syntax}
+			\verb|POST <URL>/plugin/<PLUGIN_ID>/vote|; \footnotesize{Where \verb|PLUGIN_ID| is the unique id of the plugin.}
+
+			The content of the post request must then follow the structure shown below.
+
+			\lstinputlisting[language=json]{code/vote_example.json}
+
+			Note that the value of the key \verb|"vote"| may be either 1 (\emph{up\_goat}), 0 (\emph{reset vote}), or -1 (\emph{down\_goat}). Whatever value is sent will override any previous vote by that user.
+
+		\subsection{Responses}
+			\subsubsection{Success}
+				If the user's vote is successfully cast, then the server will return \verb|205 Reset Content|, indicating that the user's document should reflect the change in vote.
+
+			\subsubsection{Authorization Error}
+				Because only authorized users are allowed to vote, those who are not will receive a \verb|401 Unauthorized| response when attempting to send this request.
+
+			\subsubsection{Plugin Not Found}
+				If the id provided does not refer to any existing plugin, then \verb|404 Not Found| is returned.
+
+			\subsubsection{Server Error}
+				If it is not possible for the server to register the vote, then it will return \verb|500 Internal Error|, and the user should interpret this as that no change has been made to the votes.
 
 \end{document}
