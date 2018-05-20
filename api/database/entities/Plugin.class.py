@@ -3,15 +3,16 @@ Plugin Object
 
 Represents a plugin, with some metadata.
 """
+
 from datetime import datetime
 
 from sqlalchemy import Column, String, Date, Text, Integer
-from sqlalchemy.ext.declarative import base
+from sqlalchemy.ext.declarative import declarative_base
 
 from api.database.util import url_safe_uuid
 
 
-class Plugin(base):
+class Plugin(declarative_base()):
 
     __tablename__ = 'plugins'
 
@@ -46,5 +47,5 @@ class Plugin(base):
         self.id = url_safe_uuid()  # Set the id to a unique string.
         self.created_date = datetime.now()  # Since we initialize the plugin now, it is created now.
         self.last_edited_date = datetime.now()  # When created, edited date is same as created date.
-        self.up_goats = 0
-        self.down_goats = 0
+        self.up_goats = 0  # Initially, there are zero up_goats.
+        self.down_goats = 0  # Initially, there are also zero down_goats.
