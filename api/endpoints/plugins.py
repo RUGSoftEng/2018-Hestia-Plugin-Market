@@ -8,7 +8,7 @@ from api.authentication.authentication import (
     requires_auth
 )
 from api.database import session
-from api.endpoints.expected_request_structures import PluginOptionsSchema
+from api.database.entities.Plugin import Plugin
 
 ns = Namespace(
     'plugins', description='List of all plugins available.')
@@ -30,7 +30,13 @@ class PluginList(Resource):
         sort_order = request.args.get('order', default='ASC', type=str)
         tags = request.args.getlist('tags', type=str)
 
-        return "Hello world"
+        return get_plugins_with_options(count,
+                                        page,
+                                        author_id,
+                                        title_contains,
+                                        sort_by,
+                                        sort_order,
+                                        tags)
 
     @ns.doc('create_plugin')
     @ns.expect(POST_PLUGIN)
@@ -42,4 +48,27 @@ class PluginList(Resource):
         json = ns.payload
         print(json)
         return json
+
+
+"""
+Gets a list of plugins as a json string, given some parameters.
+"""
+def get_plugins_with_options(count, page, author_id, title_contains, sort_by, sort_order, tags):
+    s = session()
+    q = s.query(Plugin.id,
+                Plugin.name,
+                Plugin.author_id,
+                Plugin.version,
+                Plugin.created_date,
+                Plugin.last_edited_date,
+                Plugin.description_short,
+                Plugin.up_goats,
+                Plugin.down_goats,
+                Plugin.tags)\
+        .limit(count)\
+        .offset(count*(page-1))\
+        .order_by(getattr(Plugin, sort_by) if sort_order == 'ASC' else getattr(Plugin, sort_by).desc())
+    if author_id:
+        q.filter_by(author_id = author_id)
+
 
