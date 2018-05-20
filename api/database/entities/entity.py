@@ -25,7 +25,7 @@ DB_NAME = 'HestiaDB'
 DB_USER = 'postgres'
 DB_PASSWORD = 'hestia'
 ENGINE = create_engine(
-    f'postgresql://{DB_USER}:{DB_PASSWORD}@{DB_URL}/{DB_NAME}')
+    'postgresql://{DB_USER}:{DB_PASSWORD}@{DB_URL}/{DB_NAME}')
 
 SESSION = sessionmaker(bind=ENGINE)
 
