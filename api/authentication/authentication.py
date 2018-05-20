@@ -4,11 +4,12 @@ Provides an authentication layer using JWT via Auth0.
 from functools import wraps
 import json
 from os import environ as env
+
+from pipenv.vendor.dotenv import find_dotenv, load_dotenv
 from six.moves.urllib.request import urlopen
 
-from dotenv import load_dotenv, find_dotenv
 from flask import Flask, request, jsonify, _request_ctx_stack
-from jose import jwt
+
 
 ENV_FILE = find_dotenv()
 if ENV_FILE:

@@ -4,7 +4,7 @@ Create the API from the underlying endpoints.
 
 from flask_restplus import Api
 
-from api.endpoints.plugins import NAMESPACE as PLUGINS_NAMESPACE
+from api.endpoints.plugins import ns as PLUGINS_NAMESPACE
 
 AUTHORIZATIONS = {
     'apikey': {
