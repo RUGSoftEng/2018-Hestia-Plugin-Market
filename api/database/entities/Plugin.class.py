@@ -8,7 +8,9 @@ from datetime import datetime
 
 from sqlalchemy import Column, String, Date, Text, Integer
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import relationship
 
+from api.database.tables import plugin_tag_association_table
 from api.database.util import url_safe_uuid
 
 
@@ -36,6 +38,10 @@ class Plugin(declarative_base()):
     up_goats = Column(Integer, nullable=False)
     # The number of negative votes for a plugin.
     down_goats = Column(Integer, nullable=False)
+    # One or more tags which give the plugin some meaning.
+    tags = relationship("Tag",
+                        secondary=plugin_tag_association_table,
+                        back_populates='plugins')
 
     def __init__(self, name, author_id, version, description_short, description_long):
         self.name = name
