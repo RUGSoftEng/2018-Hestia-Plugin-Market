@@ -1,11 +1,10 @@
 """
 Create the API from the underlying endpoints.
 """
+
 from flask_restplus import Api
-from api.endpoints.servers.servers import NAMESPACE as SERVERS_NAMESPACE
-from api.endpoints.users.users import NAMESPACE as USERS_NAMESPACE
-from api.endpoints.marketplace import NAMESPACE as MARKETPLACE_NAMESPACE
-from api.endpoints.marketplace.plugins.plugins import NAMESPACE as PLUGINS_NAMESPACE
+
+from api.endpoints.plugins import NAMESPACE as PLUGINS_NAMESPACE
 
 AUTHORIZATIONS = {
     'apikey': {
