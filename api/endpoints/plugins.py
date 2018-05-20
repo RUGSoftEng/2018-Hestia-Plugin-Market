@@ -1,6 +1,7 @@
 """
 Defines the plugins endpoint. A plugin represents a collection of files that can be added to a server.
 """
+from flask import request
 from flask_cors import (cross_origin)
 from flask_restplus import (Resource, Namespace, fields)
 from api.authentication.authentication import (
@@ -13,15 +14,6 @@ ns = Namespace(
     'plugins', description='List of all plugins available.')
 
 
-POST_PLUGIN = ns.model('Plugin', {
-    'name': fields.String(required=True),
-    'version': fields.String(required=False),
-    'description_short': fields.String(required=False),
-    'description_long': fields.String(required=False),
-    'tags': fields.List(fields.String(), required=False)
-})
-
-
 @ns.route('/')
 class PluginList(Resource):
 
@@ -29,9 +21,14 @@ class PluginList(Resource):
     @cross_origin(headers=["Access-Control-Allow-Origin", "*"])
     def get(self):
         # Gets a list of servers, depending on options specified by the plugin options schema.
-        posted_options_schema = PluginOptionsSchema().load(ns.payload)
-        print(posted_options_schema)
-        s = session()
+        #  Start by reading all optional arguments from the url params.
+        count = request.args.get('count', default=10, type=int)
+        page = request.args.get('page', default=1, type=int)
+        author_id = request.args.get('author_id', default=None, type=str)
+        title_contains = request.args.get('title_contains', default=None, type=str)
+        sort_by = request.args.get('by', default='up_goats', type=str)
+        sort_order = request.args.get('order', default='ASC', type=str)
+        tags = request.args.getlist('tags', type=str)
 
         return "Hello world"
 

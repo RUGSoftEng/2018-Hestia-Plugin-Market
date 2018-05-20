@@ -123,13 +123,26 @@
 		\subsection{Syntax}
 			\verb|GET <URL>/plugins|
 
-			To constrain the results, it is possible to specify some options via a JSON object, such as the example below.
+			To constrain the results, it is possible to specify some options via url parameters.
 
-			\lstinputlisting[language=json]{code/get_plugins_options.json}
+			More specifically, the following parameters are available:
 
-			More specifically, a \textbf{count} can limit the query to some number of plugins. \textbf{tags} is used to filter the query to only contain plugins whose tags contain all those listed inside that list. \textbf{title\_contains} will filter plugins so that only those whose title contains the supplied text will be returned. \textbf{author\_id} can be used to only return plugins by a specified author.
-
-			It is also possible to request that the returned data be sorted, and this can be done with the \textbf{sort} key, where the \textbf{by} keyword specifies which data category to sort by. The categories are simply any attributes listed in the \textbf{Plugins} table above. Additionally, \textbf{order} can be specified to sort the data either ascendingly or descendingly. When this is omitted, data is sorted ascendingly by default.
+			\begin{itemize}
+				\item \textbf{count} - limit the query to some number of plugins.
+					\footnotesize{Default: 10}
+				\item \textbf{page} - return results starting from a page, if \emph{count} is defined. Then with those two, a range of values can be specified. This value is 1-indexed.
+					\footnotesize{Default: 1}
+				\item \textbf{author\_id} - limit the query to only include plugins by a specific author.
+					\footnotesize{Default: None}
+				\item \textbf{title\_contains} - limit the query to include only those plugins whose title contains a given substring.
+					\footnotesize{Default: None}
+				\item \textbf{sort\_by} - sort the results of the query by a particular category.
+					\footnotesize{Default: up\_goats}
+				\item \textbf{sort\_order} - choose the direction of sorting, either \verb|ASC| or \verb|DSC|.
+					\footnotesize{Default: \verb|ASC|}
+				\item \textbf{tags} - A comma-separated list of tags. Only plugins who are tagged with any of the given tags will be shown.
+					\footnotesize{Default: None}
+			\end{itemize}
 
 		\subsection{Responses}
 			\subsubsection{Success}
