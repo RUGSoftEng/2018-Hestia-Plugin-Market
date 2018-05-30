@@ -5,6 +5,7 @@ Utility functions for database
 import base64
 import uuid
 
+
 def url_safe_uuid():
     '''
     Returns a url safe uuid.

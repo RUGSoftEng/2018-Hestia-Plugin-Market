@@ -1,0 +1,11 @@
+{
+	"name": "Example Plugin 1",
+	"version": "0.1.0rc3",
+	"description_short": "A plugin designed to do nothing.",
+	"description_long": "This is a much longer description that is supposed to only be sent when someone really wants to know more about this specific plugin.",
+	"tags": [
+		"light",
+		"rgb",
+		"cat"
+	]
+}

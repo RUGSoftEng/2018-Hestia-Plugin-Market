@@ -1,0 +1,12 @@
+{
+	"id": "uniqueid1",
+	"name": "Example Plugin 1",
+	"author_id": "f83j9pjfpofjpwj4fjf",
+	"created_date": "01-01-1970",
+	"last_edited_date": "19-05-2018",
+	"version": "0.1.0rc3",
+	"description_short": "A plugin designed to do nothing.",
+	"description_long": "This is a much longer description that is supposed to only be sent when someone really wants to know more about this specific plugin."
+	"up_goats": 45,
+	"down_goats": 24
+}
