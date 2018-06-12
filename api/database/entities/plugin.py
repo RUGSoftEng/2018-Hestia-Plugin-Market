@@ -4,17 +4,27 @@ Plugin Object
 Represents a plugin, with some metadata.
 """
 
-from datetime import datetime
+from datetime import (datetime)
 
-from sqlalchemy import Column, String, Date, Text, Integer
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship
+from sqlalchemy import (
+    Column,
+    String,
+    Date,
+    Text,
+    Integer,
+)
+from sqlalchemy.ext.declarative import (declarative_base)
+from sqlalchemy.orm import (relationship)
 
-from api.database.tables import plugin_tag_association_table
-from api.database.util import url_safe_uuid
+from api.database.tables import (PLUGIN_TAG_ASSOCIATION_TABLE)
+from api.database.util import (url_safe_uuid)
 
 
 class Plugin(declarative_base()):
+    """
+    The plugin model. Given that this is the primary point of the plugin marketplace
+    it has many pieces of additional metadata to facilitate user exploration.
+    """
 
     __tablename__ = 'plugins'
 
@@ -26,7 +36,7 @@ class Plugin(declarative_base()):
     author_id = Column(String, nullable=False)
     # The date on which this plugin was created.
     created_date = Column(Date, nullable=False)
-    # The date on which this plugin was most recently updated, either with new files or new metadata.
+    # The date when this plugin was most recently updated, either with new files or new metadata.
     last_edited_date = Column(Date, nullable=False)
     # The version of the plugin, specified by the author.
     version = Column(String(length=20), nullable=True)
@@ -40,7 +50,7 @@ class Plugin(declarative_base()):
     down_goats = Column(Integer, nullable=False)
     # One or more tags which give the plugin some meaning.
     tags = relationship("Tag",
-                        secondary=plugin_tag_association_table,
+                        secondary=PLUGIN_TAG_ASSOCIATION_TABLE,
                         back_populates='plugins')
 
     def __init__(self, name, author_id, version, description_short, description_long):

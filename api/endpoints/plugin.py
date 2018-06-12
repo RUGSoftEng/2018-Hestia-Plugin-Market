@@ -1,4 +1,7 @@
-from flask_restplus import Namespace, Resource
+from flask_restplus import (
+    Namespace,
+    Resource,
+)
 
 """
 Endpoint for interacting with singular plugins.
