@@ -1,7 +1,12 @@
 """
 This file defines the expected structure of incoming request payloads so that they may used in endpoints.
 """
-from marshmallow import Schema, fields, ValidationError, validates
+from marshmallow import (
+    Schema,
+    fields,
+    ValidationError,
+    validates,
+)
 
 
 #  The schema for the sort fields.
