@@ -1,0 +1,30 @@
+[
+	{
+		"id": "uniqueid1",
+		"name": "Example Plugin 1",
+		"author_id": "f83j9pjfpofjpwj4fjf",
+		"created_date": "01-01-1970",
+		"last_edited_date": "19-05-2018",
+		"version": "0.1.0rc3",
+		"description_short": "A plugin designed to do nothing.",
+		"up_goats": 45,
+		"down_goats": 24,
+		"tags": [
+			"cats",
+			"light",
+			"dumb"
+		]
+	},
+	{
+		"id": "uniqueid2",
+		"name": "Example Plugin 2",
+		"author_id": "f83j9pjfpofjpwj4fjf",
+		"created_date": "01-03-1945",
+		"last_edited_date": "19-05-2018",
+		"version": "2.5",
+		"description_short": "Another plugin with some metadata.",
+		"up_goats": 3,
+		"down_goats": 54,
+		"tags": []
+	}
+]
