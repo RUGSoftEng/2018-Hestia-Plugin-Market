@@ -1,14 +1,16 @@
 """
 Defines the plugins endpoint. A plugin represents a collection of files that can be added to a server.
 """
-from flask import request
+from flask import (request)
 from flask_cors import (cross_origin)
-from flask_restplus import (Resource, Namespace, fields)
-from api.authentication.authentication import (
-    requires_auth
+from flask_restplus import (
+    Resource,
+    Namespace,
+    fields,
 )
-from api.database import session
-from api.database.entities.Plugin import Plugin
+from api.authentication.authentication import (requires_auth)
+from api.database import (SESSION)
+from api.database.entities.plugin import (Plugin)
 
 ns = Namespace(
     'plugins', description='List of all plugins available.')
@@ -39,7 +41,6 @@ class PluginList(Resource):
                                         tags)
 
     @ns.doc('create_plugin')
-    @ns.expect(POST_PLUGIN)
     @cross_origin(headers=["Content-Type", "Authorization"])
     @cross_origin(headers=["Access-Control-Allow-Origin", "*"])
     @requires_auth
@@ -54,7 +55,7 @@ class PluginList(Resource):
 Gets a list of plugins as a json string, given some parameters.
 """
 def get_plugins_with_options(count, page, author_id, title_contains, sort_by, sort_order, tags):
-    s = session()
+    s = SESSION()
     q = s.query(Plugin.id,
                 Plugin.name,
                 Plugin.author_id,
