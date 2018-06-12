@@ -10,7 +10,7 @@ from flask_restplus import (
 )
 from api.authentication.authentication import (requires_auth)
 from api.database import (SESSION)
-from api.database.entities.Plugin import (Plugin)
+from api.database.entities.plugin import (Plugin)
 
 ns = Namespace(
     'plugins', description='List of all plugins available.')
