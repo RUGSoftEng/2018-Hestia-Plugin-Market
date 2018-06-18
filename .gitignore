@@ -1,0 +1,10 @@
+site/__pycache__/
+*/.env
+
+#latex files
+*.aux
+*.log
+*.toc
+
+#pycharm files
+.idea/*
